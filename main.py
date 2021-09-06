@@ -12,9 +12,10 @@ import helper
 
 
 def file_dialog(label, filetypes=None):
-    if filetypes is None:
-        filetypes = [('All Files', '*.*')]
-    name = fd.askopenfilename(filetypes=filetypes)
+    types = [('All Files', '*.*')]
+    if filetypes:
+        types += filetypes
+    name = fd.askopenfilename(filetypes=types)
     label.configure(text=name)
 
 
@@ -143,9 +144,9 @@ class Affine(tk.Frame):
         self.shift_file = tk.Entry(self)
         self.shift_file.grid(row=11, column=4, sticky="w", padx=10)
 
-        encode_button = tk.Button(self, text="Encode", command=lambda: self.encrypt(file=True))
+        encode_button = tk.Button(self, text="Encode and save", command=lambda: self.encrypt(file=True))
         encode_button.grid(row=12, column=1)
-        decode_button = tk.Button(self, text="Decode", command=lambda: self.decrypt(file=True))
+        decode_button = tk.Button(self, text="Decode and save", command=lambda: self.decrypt(file=True))
         decode_button.grid(row=12, column=4)
 
     def validate(self, encrypt=True, file=False):
@@ -192,12 +193,13 @@ class Affine(tk.Frame):
             key = int(self.key_file.get())
             shift = int(self.shift_file.get())
             with open(source, 'r') as ff, open(save, 'w') as tf:
-                while True:
-                    line = ff.readline()
-                    if not line:
-                        break
-                    cipher = affine.encode(line, key, shift)
-                    tf.writelines(cipher)
+                line = ff.read()
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", line)
+                cipher = affine.encode(line, key, shift)
+                tf.write(cipher)
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", cipher)
             mb.showinfo("File successfully encrypted")
         else:
             if not self.validate():
@@ -222,12 +224,13 @@ class Affine(tk.Frame):
             if save.split('.')[-1] != 'txt':
                 save += '.txt'
             with open(source, 'r') as ff, open(save, 'w') as tf:
-                while True:
-                    line = ff.readline()
-                    if not line:
-                        break
-                    cipher = affine.decode(line, key, shift)
-                    tf.writelines(cipher)
+                line = ff.readline()
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", line)
+                cipher = affine.decode(line, key, shift)
+                tf.writelines(cipher)
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", cipher)
             mb.showinfo(message="File successfully decrypted")
         else:
             if not self.validate(encrypt=False):
@@ -291,7 +294,7 @@ class Playfair(tk.Frame):
         self.key_file = tk.Entry(self)
         self.key_file.grid(row=11, column=1, sticky="w", padx=10)
 
-        encode_button = tk.Button(self, text="Encode", command=lambda: self.encrypt(file=True))
+        encode_button = tk.Button(self, text="Encode and Save", command=lambda: self.encrypt(file=True))
         encode_button.grid(row=12, column=1)
         decode_button = tk.Button(self, text="Decode", command=lambda: self.decrypt(file=True))
         decode_button.grid(row=12, column=4)
@@ -333,8 +336,12 @@ class Playfair(tk.Frame):
             key = self.key_file.get()
             with open(source, 'r') as ff, open(save, 'w') as tf:
                 line = ff.read()
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", line)
                 cipher = playfair.encode(line, key)
                 tf.write(cipher)
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", cipher)
             mb.showinfo("File successfully encrypted")
         else:
             if not self.validate():
@@ -357,8 +364,12 @@ class Playfair(tk.Frame):
                 save += '.txt'
             with open(source, 'r') as ff, open(save, 'w') as tf:
                 line = ff.read()
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", line)
                 cipher = playfair.decode(line, key)
                 tf.write(cipher)
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", cipher)
             mb.showinfo(message="File successfully decrypted")
         else:
             if not self.validate(encrypt=False):
@@ -421,7 +432,7 @@ class Vigenere(tk.Frame):
         self.key_file = tk.Entry(self)
         self.key_file.grid(row=11, column=1, sticky="w", padx=10)
 
-        encode_button = tk.Button(self, text="Encode", command=lambda: self.encrypt(file=True))
+        encode_button = tk.Button(self, text="Encode and Save", command=lambda: self.encrypt(file=True))
         encode_button.grid(row=12, column=1)
         decode_button = tk.Button(self, text="Decode", command=lambda: self.decrypt(file=True))
         decode_button.grid(row=12, column=4)
@@ -463,8 +474,12 @@ class Vigenere(tk.Frame):
             key = self.key_file.get()
             with open(source, 'r') as ff, open(save, 'w') as tf:
                 line = ff.read()
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", line)
                 cipher = vigenere.encode(line, key)
                 tf.write(cipher)
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", cipher)
             mb.showinfo("File successfully encrypted")
         else:
             if not self.validate():
@@ -487,8 +502,12 @@ class Vigenere(tk.Frame):
                 save += '.txt'
             with open(source, 'r') as ff, open(save, 'w') as tf:
                 line = ff.read()
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", line)
                 cipher = vigenere.decode(line, key)
                 tf.write(cipher)
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", cipher)
             mb.showinfo(message="File successfully decrypted")
         else:
             if not self.validate(encrypt=False):
@@ -551,7 +570,7 @@ class VigenereAuto(tk.Frame):
         self.key_file = tk.Entry(self)
         self.key_file.grid(row=11, column=1, sticky="w", padx=10)
 
-        encode_button = tk.Button(self, text="Encode", command=lambda: self.encrypt(file=True))
+        encode_button = tk.Button(self, text="Encode and Save", command=lambda: self.encrypt(file=True))
         encode_button.grid(row=12, column=1)
         decode_button = tk.Button(self, text="Decode", command=lambda: self.decrypt(file=True))
         decode_button.grid(row=12, column=4)
@@ -593,8 +612,12 @@ class VigenereAuto(tk.Frame):
             key = self.key_file.get()
             with open(source, 'r') as ff, open(save, 'w') as tf:
                 line = ff.read()
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", line)
                 cipher = vigenere_autokey.encode(line, key)
                 tf.write(cipher)
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", cipher)
             mb.showinfo("File successfully encrypted")
         else:
             if not self.validate():
@@ -617,8 +640,12 @@ class VigenereAuto(tk.Frame):
                 save += '.txt'
             with open(source, 'r') as ff, open(save, 'w') as tf:
                 line = ff.read()
-                cipher = vigenere_autokey.decode(line, key)
-                tf.write(cipher)
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", line)
+                plain = vigenere_autokey.decode(line, key)
+                tf.write(plain)
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", plain)
             mb.showinfo(message="File successfully decrypted")
         else:
             if not self.validate(encrypt=False):
@@ -681,7 +708,7 @@ class VigenereExt(tk.Frame):
         self.key_file = tk.Entry(self)
         self.key_file.grid(row=11, column=1, sticky="w", padx=10)
 
-        encode_button = tk.Button(self, text="Encode", command=lambda: self.encrypt(file=True))
+        encode_button = tk.Button(self, text="Encode and Save", command=lambda: self.encrypt(file=True))
         encode_button.grid(row=12, column=1)
         decode_button = tk.Button(self, text="Decode", command=lambda: self.decrypt(file=True))
         decode_button.grid(row=12, column=4)
@@ -720,12 +747,15 @@ class VigenereExt(tk.Frame):
             save = self.save_file.cget('text')
             key = self.key_file.get()
             with open(source, 'rb') as ff, open(save, 'wb') as tf:
-                while True:
-                    line = ff.read(len(key))
-                    if not line:
-                        break
-                    cipher = vigenere_extended.encode(line, key, file=True)
-                    tf.write(cipher)
+                line = ff.read()
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", line)
+
+                cipher = vigenere_extended.encode(line, key, file=True)
+                tf.write(cipher)
+
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", cipher)
             mb.showinfo("File successfully encrypted")
         else:
             if not self.validate():
@@ -745,12 +775,15 @@ class VigenereExt(tk.Frame):
             save = self.save_file.cget('text')
             key = self.key_file.get()
             with open(source, 'rb') as ff, open(save, 'wb') as tf:
-                while True:
-                    line = ff.read(len(key))
-                    if not line:
-                        break
-                    cipher = vigenere_extended.decode(line, key, file=True)
-                    tf.write(cipher)
+                line = ff.read()
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", line)
+
+                cipher = vigenere_extended.decode(line, key, file=True)
+                tf.write(line)
+
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", cipher)
             mb.showinfo(message="File successfully decrypted")
         else:
             if not self.validate(encrypt=False):
@@ -823,7 +856,7 @@ class VigenereFull(tk.Frame):
         self.seed_file = tk.Entry(self)
         self.seed_file.grid(row=11, column=4, sticky="w", padx=10)
 
-        encode_button = tk.Button(self, text="Encode", command=lambda: self.encrypt(file=True))
+        encode_button = tk.Button(self, text="Encode and Save", command=lambda: self.encrypt(file=True))
         encode_button.grid(row=12, column=1)
         decode_button = tk.Button(self, text="Decode", command=lambda: self.decrypt(file=True))
         decode_button.grid(row=12, column=4)
@@ -872,8 +905,12 @@ class VigenereFull(tk.Frame):
             seed = self.seed_file.get()
             with open(source, 'r') as ff, open(save, 'w') as tf:
                 line = ff.read()
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", line)
                 cipher = vigenere_full.encode(line, key, seed=seed)
                 tf.write(cipher)
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", cipher)
             mb.showinfo("File successfully encrypted")
         else:
             if not self.validate():
@@ -898,8 +935,12 @@ class VigenereFull(tk.Frame):
                 save += '.txt'
             with open(source, 'r') as ff, open(save, 'w') as tf:
                 line = ff.read()
-                cipher = vigenere_full.decode(line, key, seed)
-                tf.write(cipher)
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", line)
+                plain = vigenere_full.decode(line, key, seed)
+                tf.write(plain)
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", plain)
             mb.showinfo(message="File successfully decrypted")
         else:
             if not self.validate(encrypt=False):
@@ -953,7 +994,7 @@ class VigenereRun(tk.Frame):
         self.save_file = tk.Label(self)
         self.save_file.grid(row=8, column=2, pady=10)
 
-        encode_button = tk.Button(self, text="Encode", command=lambda: self.encrypt(file=True))
+        encode_button = tk.Button(self, text="Encode and Save", command=lambda: self.encrypt(file=True))
         encode_button.grid(row=12, column=1)
         decode_button = tk.Button(self, text="Decode", command=lambda: self.decrypt(file=True))
         decode_button.grid(row=12, column=4)
@@ -988,8 +1029,12 @@ class VigenereRun(tk.Frame):
                 save += '.txt'
             with open(source, 'r') as ff, open(save, 'w') as tf:
                 line = ff.read()
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", line)
                 cipher = vigenere_run.encode(line)
                 tf.write(cipher)
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", cipher)
             mb.showinfo("File successfully encrypted")
         else:
             if not self.validate():
@@ -1010,8 +1055,12 @@ class VigenereRun(tk.Frame):
                 save += '.txt'
             with open(source, 'r') as ff, open(save, 'w') as tf:
                 line = ff.read()
-                cipher = vigenere_run.decode(line)
-                tf.write(cipher)
+                self.cipher.delete("1.0", tk.END)
+                self.cipher.insert("1.0", line)
+                plain = vigenere_run.decode(line)
+                tf.write(plain)
+                self.plain.delete("1.0", tk.END)
+                self.plain.insert("1.0", plain)
             mb.showinfo(message="File successfully decrypted")
         else:
             if not self.validate(encrypt=False):
