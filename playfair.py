@@ -41,7 +41,6 @@ def process_text(text):
             text_len += 1
         split_text.append(text[i]+text[i+1])
         i += 2
-    print(split_text)
     return split_text
 
 

@@ -6,8 +6,9 @@ def preprocessing(text: str):
     return processed
 
 
-def decode(text, key):
-    key = key.upper()
+def decode(text):
+    f = open('running_key.txt', 'r')
+    key = preprocessing(f.read(len(text)*2))
     processed = preprocessing(text)
     key_len = len(key)
     decoded = ""
@@ -17,8 +18,9 @@ def decode(text, key):
     return ' '.join(helper.split_n(decoded, 5))
 
 
-def encode(text, key):
-    key = key.upper()
+def encode(text):
+    f = open('running_key.txt', 'r')
+    key = preprocessing(f.read(len(text) * 2))
     processed = preprocessing(text)
     key_len = len(key)
     cipher = ""

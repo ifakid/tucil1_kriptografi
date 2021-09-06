@@ -27,5 +27,4 @@ def encode(text, key, file=False):
         else:
             shift = ((ord(c)+ord(key[i % key_len])) % 256)
             cipher += chr(shift)
-    print(cipher)
     return cipher
