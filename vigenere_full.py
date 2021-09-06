@@ -42,7 +42,6 @@ def fill_table(table, row, col, left):
         index = random.randint(0, len(tried)-1)
 
 
-
 def check_row(table, letter, row, col):
     for i in range(col):
         if table[row][i] == letter:

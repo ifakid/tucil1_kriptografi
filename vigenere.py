@@ -7,6 +7,8 @@ def preprocessing(text: str):
 
 
 def decode(text, key):
+    print(text)
+    print(key)
     key = key.upper()
     processed = preprocessing(text)
     key_len = len(key)
