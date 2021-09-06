@@ -1,12 +1,11 @@
 # tucil1_kriptografi
+Requirement:
+- TkInter
+
 How to run:
-1. Activate virtual environment
-```
-  venv\Scripts\activate
-```
-2. Run main.py
+1. Run main.py
 ```
   python main.py
 ```
-3. Choose type of cipher
-4. Enter text or submit a file
+2. Choose type of cipher
+3. Enter text or submit a file
