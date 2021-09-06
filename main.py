@@ -788,6 +788,11 @@ class VigenereFull(tk.Frame):
         self.key = tk.Entry(self)
         self.key.grid(row=4, column=1, sticky="w", padx=10)
 
+        seed_label = tk.Label(self, text="Seed")
+        seed_label.grid(row=3, column=4, sticky="w")
+        self.seed = tk.Entry(self)
+        self.seed.grid(row=4, column=4, sticky="w", padx=10)
+
         encode_button = tk.Button(self, text="Encode", command=self.encrypt)
         encode_button.grid(row=5, column=1)
         decode_button = tk.Button(self, text="Decode", command=self.decrypt)
@@ -813,6 +818,11 @@ class VigenereFull(tk.Frame):
         self.key_file = tk.Entry(self)
         self.key_file.grid(row=11, column=1, sticky="w", padx=10)
 
+        seed_label = tk.Label(self, text="Seed")
+        seed_label.grid(row=10, column=4, sticky="w")
+        self.seed_file = tk.Entry(self)
+        self.seed_file.grid(row=11, column=4, sticky="w", padx=10)
+
         encode_button = tk.Button(self, text="Encode", command=lambda: self.encrypt(file=True))
         encode_button.grid(row=12, column=1)
         decode_button = tk.Button(self, text="Decode", command=lambda: self.decrypt(file=True))
@@ -829,6 +839,9 @@ class VigenereFull(tk.Frame):
             if not helper.preprocessing(self.key_file.get()):
                 mb.showwarning(message="Key not valid!")
                 return False
+            if not self.seed_file.get().isdigit():
+                mb.showwarning(message="Seed not valid!")
+                return False
             return True
         else:
             if encrypt:
@@ -842,6 +855,9 @@ class VigenereFull(tk.Frame):
             if not helper.preprocessing(self.key.get()):
                 mb.showwarning(message="Key not valid!")
                 return False
+            if not self.seed.get().isdigit():
+                mb.showwarning(message="Seed not valid!")
+                return False
             return True
 
     def encrypt(self, file=False):
@@ -853,20 +869,19 @@ class VigenereFull(tk.Frame):
             if save.split('.')[-1] != 'txt':
                 save += '.txt'
             key = self.key_file.get()
+            seed = self.seed_file.get()
             with open(source, 'r') as ff, open(save, 'w') as tf:
-                while True:
-                    line = ff.readline()
-                    if not line:
-                        break
-                    cipher = vigenere_full.encode(line, key)
-                    tf.writelines(cipher)
+                line = ff.read()
+                cipher = vigenere_full.encode(line, key, seed=seed)
+                tf.write(cipher)
             mb.showinfo("File successfully encrypted")
         else:
             if not self.validate():
                 return False
             text = self.plain.get("1.0", tk.END)
             key = self.key.get()
-            cipher = vigenere_full.encode(text, key)
+            seed = self.seed.get()
+            cipher = vigenere_full.encode(text, key, seed)
 
             self.cipher.delete("1.0", tk.END)
             self.cipher.insert("1.0", cipher)
@@ -878,22 +893,21 @@ class VigenereFull(tk.Frame):
             source = self.filename.cget('text')
             save = self.save_file.cget('text')
             key = self.key_file.get()
+            seed = self.seed_file.get()
             if save.split('.')[-1] != 'txt':
                 save += '.txt'
             with open(source, 'r') as ff, open(save, 'w') as tf:
-                while True:
-                    line = ff.readline()
-                    if not line:
-                        break
-                    cipher = vigenere_full.decode(line, key)
-                    tf.writelines(cipher)
+                line = ff.read()
+                cipher = vigenere_full.decode(line, key, seed)
+                tf.write(cipher)
             mb.showinfo(message="File successfully decrypted")
         else:
             if not self.validate(encrypt=False):
                 return False
             text = self.cipher.get("1.0", tk.END)
             key = self.key.get()
-            plain = vigenere_full.decode(text, key)
+            seed = self.seed.get()
+            plain = vigenere_full.decode(text, key, seed)
 
             self.plain.delete("1.0", tk.END)
             self.plain.insert("1.0", plain)
