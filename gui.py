@@ -451,7 +451,6 @@ class Vigenere(tk.Frame):
                 return False
             return True
 
-    # TODO: Decrypt File
     def encrypt(self, file=False):
         if file:
             if not self.validate(file=True):

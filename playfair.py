@@ -5,7 +5,7 @@ def preprocessing(text: str):
 
 def process_key(key):
     key = preprocessing(key)
-    key = key.upper().replace(" ", "").replace("J", "I")
+    key = key.upper().replace(" ", "").replace("J", "")
     seen = [False for _ in range(26)]
     seen[9] = True  # Letter J
     table = ""
@@ -33,10 +33,15 @@ def process_text(text):
     seen[9] = True  # Letter J
 
     split_text = []
-    for i in range(0, len(text), 2):
+    text_len = len(text)
+    i = 0
+    while i < text_len:
         if i+1 >= len(text) or text[i] == text[i+1]:
             text = insert_at_index(text, i+1, 'X')
+            text_len += 1
         split_text.append(text[i]+text[i+1])
+        i += 2
+    print(split_text)
     return split_text
 
 
