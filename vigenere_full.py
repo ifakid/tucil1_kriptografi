@@ -6,14 +6,15 @@ def decode(text, key, seed):
     key = key.upper()
     processed = helper.preprocessing(text)
     key_len = len(key)
+    table = generate_table(seed)
     decoded = ""
     for i, c in enumerate(processed):
-        shift = ord(key[i % key_len]) - ord('A')
         # Find by shift
+        decoded += find_by_shift(table, c, key[i % key_len])
     return ' '.join(helper.split_n(decoded, 5))
 
 
-def encode(text, key, seed):
+def encode(text, key, seed= 5):
     key = key.upper()
     processed = helper.preprocessing(text)
     key_len = len(key)
@@ -71,6 +72,8 @@ def check_column(table, letter, row, col):
     return True
 
 
-if __name__ == '__main__':
-    table = generate_table(10)
-    print(table)
+def find_by_shift(table, letter, key):
+    key_idx = ord(key)-ord('A')
+    for i in range(26):
+        if table[i][key_idx] == letter:
+            return chr(ord('A')+i)

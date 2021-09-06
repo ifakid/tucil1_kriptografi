@@ -7,7 +7,7 @@ def preprocessing(text: str):
 
 
 def decode(text):
-    f = open('running_key.txt', 'r')
+    f = open('running_key.txt', 'r', encoding='utf-8')
     key = preprocessing(f.read(len(text)*2))
     processed = preprocessing(text)
     key_len = len(key)
@@ -19,12 +19,13 @@ def decode(text):
 
 
 def encode(text):
-    f = open('running_key.txt', 'r')
-    key = preprocessing(f.read(len(text) * 2))
-    processed = preprocessing(text)
-    key_len = len(key)
-    cipher = ""
-    for i, c in enumerate(processed):
-        shift = ((ord(c)+ord(key[i % key_len])-(ord('A')*2)) % 26)+ord('A')
-        cipher += chr(shift)
-    return ' '.join(helper.split_n(cipher, 5))
+    with open('./running_key.txt', 'r', encoding='utf-8') as f:
+        key = f.read()
+        key = preprocessing(key)
+        processed = preprocessing(text)
+        key_len = len(key)
+        cipher = ""
+        for i, c in enumerate(processed):
+            shift = ((ord(c)+ord(key[i % key_len])-(ord('A')*2)) % 26)+ord('A')
+            cipher += chr(shift)
+        return ' '.join(helper.split_n(cipher, 5))
