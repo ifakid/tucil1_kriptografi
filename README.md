@@ -1,4 +1,7 @@
 # tucil1_kriptografi
+Requirement:
+- TkInter
+
 How to run:
 1. Run main.py
 ```
